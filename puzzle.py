@@ -3,9 +3,8 @@ import matplotlib.patches as patches
 from matplotlib.patches import Arc
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-archs = ["none","topleft","topright","bottomleft","bottomright"]
-
-board = [
+#0 means no number in cell
+numbers = [
 	[0,0,21,0,0,0,0,0,0],
 	[21,0,0,0,27,0,0,25,0],
 	[0,27,0,0,0,15,0,0,9],
@@ -17,6 +16,7 @@ board = [
 	[0,0,0,0,0,0,35,0,0]
 ]
 
+#1 means green, 0 means white
 colors = [
 	[1,0,0,1,0,1,0,1,0],
 	[0,0,0,1,0,0,1,0,1],
@@ -29,60 +29,83 @@ colors = [
 	[0,1,0,0,1,0,1,0,1]
 ]
 
-final_board = []
+#tl means topleft, br means bottom right, tr means top right, bl means bottom left, na means none
+curves = [
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"],
+	["na","na","na","na","na","na","na","na","na"]
+]
 
-for i in range(len(board)):
-	temp_board = []
-	for j in range(len(board[i])):
-		color = (0.70,1,0.7) if colors[i][j] == 1 else "white"
-		num = None if board[i][j] == 0 else board[i][j]
-		temp_board.append({"cv":"none", "color": color, "val":num})
-	final_board.append(temp_board)                      
-	
-	
-print(final_board[0])
+numbers = [[3,0,9,0],
+		   [0,0,0,6],
+		   [8,0,0,0],
+		   [0,6,0,24]]
+
+colors = [[0,1,0,1],
+		  [0,0,0,0],
+		  [0,1,0,1],
+		  [0,0,0,0]]
+
+curves = [["tr","na","tr","na"],
+		  ["tl","tr","br","bl"],
+		  ["bl","na","bl","na"],
+		  ["na","tr","tl","na"]]
+
+
+class board(object):
+	def __init__(self,numbers,colors,curves):
+		self.board = []
+		for i in range(len(numbers)):
+			temp = []
+			for j in range(len(numbers[i])):
+				color = (0.7,1,0.7) if colors[i][j] == 1 else "white"
+				num = None if numbers[i][j] == 0 else numbers[i][j]
+				curve = curves[i][j]
+				temp.append({"curve":curve, "color": color, "number":num})
+			self.board.append(temp)
+
+	def updateCurve(self,i,j,newCurve):
+		self.board[i][j]['curve'] = newCurve                  
+
+
+
+def drawArch(arch,i,j,cell_size):
+	if arch == "tl":
+		a = 180
+		x,y = (j+1)*cell_size,(i+1)*cell_size
+	elif arch == "tr":
+		a = 270
+		x,y = (j)*cell_size,(i+1)*cell_size
+	elif arch == "bl":
+		a = 90
+		x,y = (j+1)*cell_size,(i)*cell_size
+	elif arch == "br":
+		a = 0
+		x,y = (j)*cell_size,(i)*cell_size
+	return patches.Arc((x,y),cell_size*2,cell_size*2,angle=a,theta1=0,theta2=90,lw=2)
 
 
 
 
-def drawArch(arch,i,j):
-
-	if arch == "topleft":
-		t1,t2 = 90,180
-		x,y = (j+1)*16,(i+1)*16
-	elif arch == "topright":
-		t1,t2 = 180,270
-		x,y = (j)*16,(i+1)*16 
-	elif arch == "bottomleft":
-		t1,t2 = 0,90
-		x,y = (j+1)*16,(i)*16 
-	elif arch == "bottomright":
-		t1,t2 = 270,360
-		x,y = (j)*16,(i)*16
-
-	return patches.Arc((x,y),32,32,angle=90,theta1=t1,theta2=t2)
-
-def visual(arr,num_rows=9,num_cols=9,cell_size=16,cell_color='white',edge_color='black'):
+def visual(arr,num_rows=4,num_cols=4,cell_size=16,cell_color='white',edge_color='black'):
 	ax = plt.gca()
-
-	for i in range(num_cols):
-		for j in range(num_rows):
-
-			rect = plt.Rectangle([j*16, i*16], cell_size, cell_size,facecolor=arr[i][j]['color'],edgecolor=edge_color)
+	archs = []
+	for i in range(num_rows):
+		for j in range(num_cols):
+			rect = plt.Rectangle([i*cell_size, j*cell_size], cell_size, cell_size, facecolor=arr[i][j]['color'], edgecolor=edge_color)
 			ax.add_patch(rect)
-			if not arr[i][j]["cv"] == "none":
-				arch = drawArch(arr[i][j]["cv"],j,i)
-				ax.add_patch(arch)
-			# e1 = patches.Arc((1*16, 1*16),32,32,angle=90,theta1=90,theta2=180)
-			# e2 = patches.Arc((0*16, 1*16),32,32,angle=90,theta1=180,theta2=270)
-			# e3 = patches.Arc((1*16, 1*16),32,32,angle=90,theta1=270,theta2=360)
-			# e4 = patches.Arc((1*16, 1*16),32,32,angle=90,theta1=0,theta2=90)
-			
-			# ax.add_patch(e1)
-			# ax.add_patch(e2)
-			# ax.add_patch(e3)
-			# ax.add_patch(e4)
-			plt.text(j*16+8,i*16+8, arr[i][j]['val'],fontsize="12",ha="center")
+			plt.text(i*cell_size+cell_size/2,j*cell_size+cell_size/2, arr[i][j]['number'],fontsize="40",weight=500,ha="center",va="center")
+			if arr[i][j]["curve"] != "na":
+				arch = drawArch(arr[i][j]["curve"],i,j,cell_size)
+				archs.append(arch)
+	for arch in archs:
+		ax.add_patch(arch)
 
 	ax.axis('off')
 	ax.autoscale_view()
@@ -92,7 +115,9 @@ def visual(arr,num_rows=9,num_cols=9,cell_size=16,cell_color='white',edge_color=
 	ax.yaxis.set_major_locator(plt.NullLocator())
 	plt.show()
 
-visual(final_board)
+
+b = board(numbers,colors,curves)
+visual(b.board)
 
 
 
