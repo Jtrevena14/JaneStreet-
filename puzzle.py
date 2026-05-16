@@ -116,8 +116,18 @@ def visual(arr,num_rows=4,num_cols=4,cell_size=16,cell_color='white',edge_color=
 	plt.show()
 
 
+<<<<<<< HEAD
 b = board(numbers,colors,curves)
 visual(b.board)
+=======
+def possibleArch(final_board):
+    for i in range(len(final_board)):
+        for j in range(len(final_board[0])):
+            if(final_board[i][j]['val'] != 0):
+                print(final_board[i][j]['val'])
+
+visual(final_board)
+>>>>>>> 0f9a744be64bffa81e599bd58164c850551ed8ac
 
 
 
