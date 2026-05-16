@@ -92,6 +92,13 @@ def visual(arr,num_rows=9,num_cols=9,cell_size=16,cell_color='white',edge_color=
 	ax.yaxis.set_major_locator(plt.NullLocator())
 	plt.show()
 
+
+def possibleArch(final_board):
+    for i in range(len(final_board)):
+        for j in range(len(final_board[0])):
+            if(final_board[i][j]['val'] != 0):
+                print(final_board[i][j]['val'])
+
 visual(final_board)
 
 
