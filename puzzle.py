@@ -58,8 +58,6 @@ def visual(arr,num_rows=9,num_cols=9,cell_size=16,cell_color='white',edge_color=
 	ax.yaxis.set_major_locator(plt.NullLocator())
 	plt.show()
 
-
-
 visual(final_board)
 
 
